@@ -38,6 +38,7 @@
             android:id="@+id/etCountry"
             android:layout_marginBottom="10dp"
             android:ems="10"
+            android:clickable="false"
             android:hint="Enter Country Code (Optional)"
             android:inputType="textPersonName" />
         <Button
@@ -49,6 +50,7 @@
             android:textColor="@android:color/white"
             android:onClick="getWeatherDetails"
             android:text="Get"
+            android:clickable="false"
             app:backgroundTint="@null" />
         <ScrollView
             android:layout_width="match_parent"
