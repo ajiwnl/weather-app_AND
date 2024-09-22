@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         appid = getString(R.string.apiKey);
-        etCity = findViewById(R.id.etCity);
-        etCountry = findViewById(R.id.etCountry);
         tvResult = findViewById(R.id.tvResult);
     }
 
@@ -45,78 +43,78 @@ public class MainActivity extends AppCompatActivity {
         String tempUrl = url + "?q=" + city + "," + country + "&appid=" + appid;
         StringRequest stringRequest;
         stringRequest = new StringRequest(Request.Method.POST, tempUrl, response -> {
-            String output = "";
             try {
                 JSONObject jsonResponse = new JSONObject(response);
-                JSONArray jsonArray = jsonResponse.getJSONArray("weather");
-                JSONObject jsonObjectWeather = jsonArray.getJSONObject(0);
-                String description = jsonObjectWeather.getString("description");
                 JSONObject jsonObjectMain = jsonResponse.getJSONObject("main");
-                double temp = jsonObjectMain.getDouble("temp") - 273.15;
-                double feelsLike = jsonObjectMain.getDouble("feels_like") - 273.15;
-                float pressure = jsonObjectMain.getInt("pressure");
-                int humidity = jsonObjectMain.getInt("humidity");
-                JSONObject jsonObjectWind = jsonResponse.getJSONObject("wind");
-                String wind = jsonObjectWind.getString("speed");
-                JSONObject jsonObjectClouds = jsonResponse.getJSONObject("clouds");
-                String clouds = jsonObjectClouds.getString("all");
-                JSONObject jsonObjectSys = jsonResponse.getJSONObject("sys");
-                String countryName = jsonObjectSys.getString("country");
-                String cityName = jsonResponse.getString("name");
+                double temp = jsonObjectMain.getDouble("temp") - 273.15; // Convert Kelvin to Celsius
+                String suggestion = getSuggestion(temp); // Get suggestion based on temperature
+
+                // Display temperature and suggestion only
+                String output = "Temp: " + df.format(temp) + " °C"
+                        + "\nSuggestion: " + suggestion;
+
                 tvResult.setTextColor(Color.rgb(68, 134, 199));
-                String suggestion = getWeatherSuggestion(temp, humidity);
-                output += "Current weather of " + cityName + " (" + countryName + ")"
-                        + "\n Temp: " + df.format(temp) + " °C"
-                        + "\n Feels Like: " + df.format(feelsLike) + " °C"
-                        + "\n Humidity: " + humidity + "%"
-                        + "\n Description: " + description
-                        + "\n Wind Speed: " + wind + "m/s (meters per second)"
-                        + "\n Cloudiness: " + clouds + "%"
-                        + "\n Pressure: " + pressure + " hPa"
-                        + "\n Suggestions: " + suggestion + " hPa";
                 tvResult.setText(output);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }, error -> Toast.makeText(getApplicationContext(), error.toString().trim(), Toast.LENGTH_SHORT).show());
+
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
-    private String getWeatherSuggestion(double temp, int humidity) {
+
+    private String getSuggestion(double temp) {
         String[] hotSuggestions = {
                 "Stay cool and hydrated!",
                 "Maybe it's time for some ice cream!",
-                "Perfect weather for a swim!"
+                "Perfect weather for a swim!",
+                "Stay in the shade when possible.",
+                "Don't forget your sunscreen!",
+                "Light, breathable clothing is a must!",
+                "How about a cold smoothie?",
+                "Best to stay indoors during peak heat.",
+                "Take frequent breaks if you're outside.",
+                "An icy drink can help cool you down!"
         };
 
         String[] warmSuggestions = {
                 "A nice day for a walk.",
                 "Enjoy the outdoors!",
-                "Great day for a picnic."
+                "Great day for a picnic.",
+                "Perfect for some outdoor sports!",
+                "A beautiful day for a bike ride.",
+                "Open the windows and let the breeze in.",
+                "How about a nice outdoor brunch?",
+                "Catch up on gardening!",
+                "Ideal weather for a scenic hike.",
+                "Wear light layers just in case!"
         };
 
         String[] coolSuggestions = {
                 "Perfect for a cozy day indoors.",
                 "How about some warm tea?",
-                "Cool weather—stay comfy!"
+                "Cool weather—stay comfy!",
+                "Snuggle up with a good book.",
+                "Maybe time for a light jacket.",
+                "Great weather for a brisk walk.",
+                "How about baking something warm?",
+                "A light scarf might come in handy.",
+                "A nice day for indoor activities.",
+                "Consider layering up just in case!"
         };
 
         String[] chillySuggestions = {
                 "Time for a sweater!",
                 "A good day for a warm drink.",
-                "Stay warm!"
-        };
-
-        String[] highHumiditySuggestions = {
-                "Quite humid today, stay light!",
-                "Feels sticky—dress lightly.",
-                "Humid weather, stay fresh!"
-        };
-
-        String[] lowHumiditySuggestions = {
-                "Dry air today, stay moisturized.",
-                "Low humidity—keep hydrated!",
-                "Dry day, drink plenty of water!"
+                "Stay warm!",
+                "Consider bundling up a bit more today.",
+                "Perfect day for some hot cocoa!",
+                "You might need a coat today.",
+                "Stay inside and keep warm if possible.",
+                "A chilly day—keep your feet warm!",
+                "How about a bowl of soup?",
+                "Mittens might be a good idea!"
         };
 
         Random random = new Random();
@@ -132,12 +130,6 @@ public class MainActivity extends AppCompatActivity {
             suggestion = chillySuggestions[random.nextInt(chillySuggestions.length)];
         }
 
-        // Add a humidity-based suggestion
-        if (humidity > 80) {
-            suggestion += " " + highHumiditySuggestions[random.nextInt(highHumiditySuggestions.length)];
-        } else if (humidity < 40) {
-            suggestion += " " + lowHumiditySuggestions[random.nextInt(lowHumiditySuggestions.length)];
-        }
 
         return suggestion;
     }
