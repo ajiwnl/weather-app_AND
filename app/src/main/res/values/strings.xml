@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+
+    <string name="banner_adunit_id">ca-app-pub-3940256099942544/6300978111</string>
+
+    <string name="apiKey">fff8c220f176a99dd4ee4e0aa4ef5063</string>
 </resources>
